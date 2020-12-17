@@ -43,7 +43,7 @@ Install go-fcapp source in your workspace with:
 go get github.com/gcinnovate/go-fcapp
 ```
 
-Build nitau with:
+Build go-fcapp with:
 
 ```
 go install github.com/gcinnovate/go-fcapp/..
