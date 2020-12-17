@@ -1,0 +1,12 @@
+api:
+    authtoken: a252d0151e08ac78571f16146523ce5d0dbfbb9d 
+    rooturi: http://localhost/api/v2
+    smsurl: http://localhost:5003/api/v1/sms
+    prebirth_campaign: 39a2f20c-e06c-42d6-9d7f-206a41ff136e
+    postbirth_campaign: 0f697f2c-cdfb-4a1c-9f08-0fd14f0d1eca
+    familyconnect_uri: http://localhost/
+    babytrigger_flow_uuid: ee3e7476-9518-4f5c-bcf4-57554816c530
+server:
+    port: 5004
+database:
+    uri: postgres://postgres:postgres@localhost:5431/temba_latest?sslmode=disable
