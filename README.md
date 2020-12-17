@@ -25,7 +25,6 @@ environment variables and parameters and for more details on each option.
 
 For use with your RapidPro instance, you will want to configure these settings:
 
- * `FCAPP_SMSURL`: The NITA-U gateway email address for your account 
  * `FCAPP_AUTH_TOKEN`: The FamilyConnect RapidPro authorization Token
  * `FCAPP_PREBIRTH_CAMPAIGN`: The UUID for the prebirth campaign with message events for all languages
  * `FCAPP_POSTBIRTH_CAMPAIGN`: The UUID for the postbirth campaign with message events for all languages
@@ -33,6 +32,7 @@ For use with your RapidPro instance, you will want to configure these settings:
  * `FCAPP_ROOT_URI`: The root uri for the api endpoints for the gateway (default: `https://msdg.uconnect.go.ug/api/v1`)
  * `FCAPP_BABY_TRIGGER_FLOW_UUID`: The UUID for the flow in FamilyConnect that maps to the baby trigger
  * `FCAPP_SERVER_PORT`: The port on which to run the go-fcapp service
+ * `FCAPP_SMSURL`: The SMSURL to use for sending SMS through this app 
 
  
 # Development
