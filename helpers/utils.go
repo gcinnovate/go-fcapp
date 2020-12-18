@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gcinnovate/go-fcapp/config"
 )
 
 // GetDefaultEnv Returns default value passed if env variable not defined
@@ -19,11 +21,9 @@ func GetDefaultEnv(key, fallback string) string {
 
 // SynchronizeCHWs synchronizes CHWs from iHRIS
 func SynchronizeCHWs() {
-	tokenURL := GetDefaultEnv("NITAU_API_ROOT_URI", "https://msdg.uconnect.go.ug/api/v1") + "/get-jwt-token/"
+	tokenURL := GetDefaultEnv("FCAPP_ROOT_URI", "https://msdg.uconnect.go.ug/api/v1") + "/get-jwt-token/"
 	requestBody, err := json.Marshal(map[string]string{
-		"userid":   GetDefaultEnv("NITAU_API_USER", ""),
-		"password": GetDefaultEnv("NITAU_API_PASSWORD", ""),
-		"email":    GetDefaultEnv("NITAU_API_EMAIL", ""),
+		"email": GetDefaultEnv("FCAPP_EMAIL", ""),
 	})
 
 	if err != nil {
@@ -79,4 +79,25 @@ func GetFlowResult(results map[string]map[string]string, msg string) string {
 		return elem["value"]
 	}
 	return ""
+}
+
+// PostRequest posts a request to the RapidPro API
+func PostRequest(url string, data []byte) (*http.Response, error) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	client := &http.Client{Transport: tr}
+
+	r, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data))
+	token := GetDefaultEnv("FCAPP_AUTH_TOKEN", config.FcAppConf.API.AuthToken)
+	r.Header.Add("Authorization", "Token "+token)
+	r.Header.Add("Content-Type", "application/json")
+
+	resp, err := client.Do(r)
+	if err != nil && resp == nil {
+		log.Printf("Failed to make post call to RapidPro")
+		return nil, err
+	}
+	return resp, nil
 }

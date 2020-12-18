@@ -15,7 +15,7 @@ var regionDistricts map[string]map[string]interface{}
 var db *sqlx.DB
 
 func init() {
-	psqlInfo := fmt.Sprintf("%s", config.NitauConf.Database.URI)
+	psqlInfo := fmt.Sprintf("%s", config.FcAppConf.Database.URI)
 
 	var err error
 	db, err = ConnectDB(psqlInfo)
@@ -122,7 +122,7 @@ func LoadRegionDistricts(db *sqlx.DB) (map[string]map[string]interface{}, error)
 		regDistricts[fmt.Sprintf("%s", region)] = payload
 
 	}
-	log.Println(regDistricts)
+	// log.Println(regDistricts)
 	return regDistricts, nil
 }
 
@@ -215,7 +215,7 @@ func LoadDistrictSubcounties(db *sqlx.DB) (map[string]map[string]interface{}, er
 		districtSubs[fmt.Sprintf("%s", district)] = payload
 
 	}
-	fmt.Println(districtSubs)
+	// fmt.Println(districtSubs)
 	return districtSubs, nil
 }
 

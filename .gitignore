@@ -4,12 +4,13 @@
 *.dll
 *.so
 *.dylib
-nitau
+go-fcapp
 test-smtp
 dist
 .vscode
 .envrc
 .env
+config.yml
 docs/*
 docs
 

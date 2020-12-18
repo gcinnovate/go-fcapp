@@ -46,17 +46,8 @@ func main() {
 
 	v1 := router.Group("/api/v1")
 	{
-		// sms := new(controllers.SMSController)
-		// v1.POST("/sms", sms.Default)
-
-		sr := new(controllers.SecReceiversController)
-		v1.GET("/secreceivers", sr.SecondReceivers)
-
 		pl := new(controllers.EventMessageController)
 		v1.GET("/eventmessage", pl.Default)
-
-		op := new(controllers.OptOutSecReceiverController)
-		v1.POST("/optout_secondaryreceiver", op.OptOutSecReceiver)
 
 		v1.POST("/subregion_districts/:region", func(c *gin.Context) {
 			region := c.Param("region")
@@ -69,18 +60,24 @@ func main() {
 		})
 	}
 	// v2 := router.Use()
-	// authorized := router.Group("/api/v2", basicAuth())
-	// {
-	// 	sendsms := new(controllers.BulksmsController)
-	// 	authorized.GET("/sendsms", sendsms.BulkSMS)
-	// }
+	authorized := router.Group("/api/v1", basicAuth())
+	{
+		sr := new(controllers.SecReceiversController)
+		authorized.GET("/secreceivers", sr.SecondReceivers)
+
+		op := new(controllers.OptOutSecReceiverController)
+		authorized.POST("/optout_secondaryreceiver", op.OptOutSecReceiver)
+
+		bt := new(controllers.BabyTriggerController)
+		authorized.POST("/startbabytriggerflow", bt.BabyTrigger)
+	}
 
 	// Handle error response when a route is not defined
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "Not found"})
 	})
 
-	conf := config.NitauConf
+	conf := config.FcAppConf
 	// Init our Server
 	router.Run(":" + conf.Server.Port)
 }
@@ -108,16 +105,16 @@ func basicAuth() gin.HandlerFunc {
 }
 
 func authenticateUser(username, password string) bool {
-	log.Printf("Username:%s, password:%s", username, password)
+	// log.Printf("Username:%s, password:%s", username, password)
 	userObj := models.User{}
 	err := db.GetDB().QueryRowx(
-		"SELECT id, username, name, phone, email FROM users "+
+		"SELECT id, username FROM fcapp_users "+
 			"WHERE username = $1 AND password = crypt($2, password) ", username, password).StructScan(&userObj)
 	if err != nil {
 		fmt.Printf("User:[%v]", err)
 		return false
 	}
-	fmt.Printf("User:[%v]", userObj)
+	// fmt.Printf("User:[%v]", userObj)
 	return true
 }
 

@@ -8,15 +8,15 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-// NitauConf is the global conf
-var NitauConf Config
+// FcAppConf is the global conf
+var FcAppConf Config
 
 func init() {
-	args := ProcessArgs(&NitauConf)
+	args := ProcessArgs(&FcAppConf)
 
 	// read configuration from the file and environment variables
-	if err := cleanenv.ReadConfig(args.ConfigPath, &NitauConf); err != nil {
-		fmt.Println(err)
+	if err := cleanenv.ReadConfig(args.ConfigPath, &FcAppConf); err != nil {
+		fmt.Println(err, " Please make sure you have a config.yml file in app directory")
 		os.Exit(2)
 	}
 }
