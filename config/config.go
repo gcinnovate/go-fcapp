@@ -24,13 +24,14 @@ func init() {
 // Config is the top level cofiguration object
 type Config struct {
 	API struct {
-		AuthToken           string `yaml:"authtoken" env:"FCAPP_AUTH_TOKEN" env-description:"RapidPro API Token"`
-		RootURI             string `yaml:"rooturi" env:"FCAPP_ROOT_URI" env-description:"API ROOT URI"`
-		SmsURL              string `yaml:"smsurl" env:"FCAPP_SMSURL" env-description:"API SMS endpoint"`
-		PrebirthCampaign    string `yaml:"prebirth_campaign" env:"FCAPP_PREBIRTH_CAMPAIGN" env-description:"Prebirth Campaign UUID"`
-		PostbirthCampaign   string `yaml:"postbirth_campaign" env:"FCAPP_POSTBIRTH_CAMPAIGN" env-description:"Postbirth Campaign UUID"`
-		FamilyConnectURI    string `yaml:"familyconnect_uri" env:"FCAPP_FAMILYCONNECT_URI" env-description:"FamilyConnect URI"`
-		BabyTriggerFlowUUID string `yaml:"babytrigger_flow_uuid" env:"FCAPP_BABY_TRIGGER_FLOW_UUID" env-description:"FamilyConnect Baby Trigger Flow UUID"`
+		AuthToken                  string `yaml:"authtoken" env:"FCAPP_AUTH_TOKEN" env-description:"RapidPro API Token"`
+		RootURI                    string `yaml:"rooturi" env:"FCAPP_ROOT_URI" env-description:"API ROOT URI"`
+		SmsURL                     string `yaml:"smsurl" env:"FCAPP_SMSURL" env-description:"API SMS endpoint"`
+		PrebirthCampaign           string `yaml:"prebirth_campaign" env:"FCAPP_PREBIRTH_CAMPAIGN" env-description:"Prebirth Campaign UUID"`
+		PostbirthCampaign          string `yaml:"postbirth_campaign" env:"FCAPP_POSTBIRTH_CAMPAIGN" env-description:"Postbirth Campaign UUID"`
+		FamilyConnectURI           string `yaml:"familyconnect_uri" env:"FCAPP_FAMILYCONNECT_URI" env-description:"FamilyConnect URI"`
+		BabyTriggerFlowUUID        string `yaml:"babytrigger_flow_uuid" env:"FCAPP_BABY_TRIGGER_FLOW_UUID" env-description:"FamilyConnect Baby Trigger Flow UUID"`
+		EmtctUpdateContactFlowUUID string `yaml:"emtct_updatecontact_flow_uuid" env:"FCAPP_EMTCT_UPDATECONTACT_FLOWUUID" env-description:"FC Contact Update Flow UUID"`
 	} `yaml:"api"`
 	Server struct {
 		Port string `yaml:"port" env:"FCAPP_SERVER_PORT" env-description:"Server port" env-default:"5004"`

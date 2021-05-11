@@ -86,6 +86,20 @@ VALUES
         ('Ivan','Muguya','ivan', '+256756253430', crypt('ivan',gen_salt('bf')),'ivanupsons@gmail.com',
         (SELECT id FROM fcapp_user_roles WHERE name ='API User'),'t');
 
+CREATE OR REPLACE FUNCTION public.gen_code()
+ RETURNS text
+ LANGUAGE plpython3u
+AS $function$
+import string
+import random
+from uuid import uuid4
+
+
+def id_generator(size=12, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+return id_generator()
+$function$;
 
 CREATE OR REPLACE FUNCTION fcapp_has_msisdn(contactid INT) RETURNS BOOLEAN AS
 $delim$
@@ -127,16 +141,20 @@ $delim$
     DECLARE
     field_uuid TEXT;
     res TEXT;
+    orgid INT;
     BEGIN
-        SELECT uuid INTO field_uuid FROM contacts_contactfield WHERE label = field;
+        SELECT org_id INTO orgid FROM contacts_contact WHERE id = contactid;
         IF FOUND THEN
-            SELECT 
-                fields->field_uuid->>'text' INTO res
-            FROM 
-                contacts_contact
-            WHERE
-                id = contactid;
-            RETURN res;
+            SELECT uuid INTO field_uuid FROM contacts_contactfield WHERE label = field AND org_id = orgid;
+            IF FOUND THEN
+                SELECT 
+                    fields->field_uuid->>'text' INTO res
+                FROM 
+                    contacts_contact
+                WHERE
+                    id = contactid;
+                RETURN res;
+            END IF;
         END IF;
         RETURN res;
     END;

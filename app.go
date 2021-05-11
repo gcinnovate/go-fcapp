@@ -58,6 +58,8 @@ func main() {
 			district := c.Param("district")
 			c.JSON(http.StatusOK, db.GetDistrictSubcounties()[district])
 		})
+		em := new(controllers.EmtctUpdateContactController)
+		v1.POST("/update_emtct_contact", em.EmtctUpdateContact)
 	}
 	// v2 := router.Use()
 	authorized := router.Group("/api/v1", basicAuth())

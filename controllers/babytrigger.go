@@ -14,7 +14,8 @@ import (
 type flowStartObject struct {
 	Flow     string            `json:"flow"`
 	Contacts []string          `json:"contacts"`
-	Extra    map[string]string `json"extra"`
+	Urns     []string          `json:"urns"`
+	Params   map[string]string `json:"params"`
 }
 
 // BabyTriggerController will hold the methods to
@@ -44,7 +45,7 @@ func (t *BabyTriggerController) BabyTrigger(c *gin.Context) {
 	reqObj := flowStartObject{
 		Flow:     flowUUID,
 		Contacts: contactUUIDs,
-		Extra:    map[string]string{"child_dob": dateOfBirth},
+		Params:   map[string]string{"child_dob": dateOfBirth},
 	}
 	var requestBody []byte
 	requestBody, err := json.Marshal(reqObj)
