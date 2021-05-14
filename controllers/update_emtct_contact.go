@@ -54,6 +54,7 @@ func (t *EmtctUpdateContactController) EmtctUpdateContact(c *gin.Context) {
 		Urns:     Urns,
 		Contacts: contacts,
 		Params: map[string]string{
+			"updatevalue":       updateValue,
 			"messaginglanguage": messagingLanguage,
 			"childage":          childAge,
 			"pregnancyage":      pregnancyAge,
