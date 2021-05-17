@@ -24,7 +24,7 @@ func (t *EmtctUpdateContactController) EmtctUpdateContact(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	updateCategory := c.Query("update_category")
 	updateValue := helpers.GetFlowResult(payload.Results, "updatevalue")
 	numberToUpdate := helpers.GetFlowResult(payload.Results, "numbertoupdate")
 	messagingLanguage := helpers.GetFlowResult(payload.Results, "messaginglanguage")
@@ -54,6 +54,7 @@ func (t *EmtctUpdateContactController) EmtctUpdateContact(c *gin.Context) {
 		Urns:     Urns,
 		Contacts: contacts,
 		Params: map[string]string{
+			"updatecategory":    updateCategory,
 			"updatevalue":       updateValue,
 			"messaginglanguage": messagingLanguage,
 			"childage":          childAge,
