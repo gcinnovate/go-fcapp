@@ -25,6 +25,8 @@ func (t *EmtctUpdateContactController) EmtctUpdateContact(c *gin.Context) {
 		return
 	}
 	updateCategory := c.Query("update_category")
+	languageCategory := c.Query("language_category")
+	messageCategory := c.Query("message_category")
 	updateValue := helpers.GetFlowResult(payload.Results, "updatevalue")
 	numberToUpdate := helpers.GetFlowResult(payload.Results, "numbertoupdate")
 	messagingLanguage := helpers.GetFlowResult(payload.Results, "messaginglanguage")
@@ -55,6 +57,8 @@ func (t *EmtctUpdateContactController) EmtctUpdateContact(c *gin.Context) {
 		Contacts: contacts,
 		Params: map[string]string{
 			"updatecategory":    updateCategory,
+			"languagecategory":  languageCategory,
+			"messagecategory":   messageCategory,
 			"updatevalue":       updateValue,
 			"messaginglanguage": messagingLanguage,
 			"childage":          childAge,
