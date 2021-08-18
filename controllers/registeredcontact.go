@@ -43,10 +43,10 @@ func (t *RegisteredContactController) ContactRegistered(c *gin.Context) {
 
 	resp, err := helpers.GetRequest(contactsURI)
 	log.Println("Response::::", resp)
-	isRegistered := false
+	isRegistered := "false"
 	if resp == nil || err != nil {
 		log.Printf("Failed to get contact:%s Error:%s", tel, err)
-		isRegistered = false
+		isRegistered = "false"
 		c.JSON(http.StatusConflict, gin.H{"message": "Failed to read contact", "isRegistered": isRegistered})
 		return
 	}
@@ -62,7 +62,7 @@ func (t *RegisteredContactController) ContactRegistered(c *gin.Context) {
 			for _, g := range groups.([]interface{}) {
 				currentGroup := g.(map[string]interface{})
 				if currentGroup["name"] == "All FC-EMTCT" {
-					isRegistered = true
+					isRegistered = "true"
 				}
 				log.Printf(">>>>>%v, %T", currentGroup["name"], currentGroup["name"])
 			}
