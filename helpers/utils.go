@@ -101,3 +101,24 @@ func PostRequest(url string, data []byte) (*http.Response, error) {
 	}
 	return resp, nil
 }
+
+// GetRequest gets a request to the RapidPro API
+func GetRequest(url string) (*http.Response, error) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	client := &http.Client{Transport: tr}
+
+	r, _ := http.NewRequest(http.MethodGet, url, nil)
+	token := GetDefaultEnv("FCAPP_AUTH_TOKEN", config.FcAppConf.API.AuthToken)
+	r.Header.Add("Authorization", "Token "+token)
+	r.Header.Add("Content-Type", "application/json")
+
+	resp, err := client.Do(r)
+	if err != nil && resp == nil {
+		log.Printf("Failed to make get call to RapidPro")
+		return nil, err
+	}
+	return resp, nil
+}

@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jasonlvhit/gocron"
+
 	// Import godotenv for .env variables
 	"github.com/gcinnovate/go-fcapp/config"
 	"github.com/gcinnovate/go-fcapp/controllers"
@@ -60,6 +61,9 @@ func main() {
 		})
 		em := new(controllers.EmtctUpdateContactController)
 		v1.POST("/update_emtct_contact", em.EmtctUpdateContact)
+
+		cn := new(controllers.RegisteredContactController)
+		v1.POST("/contact_registered", cn.ContactRegistered)
 	}
 	// v2 := router.Use()
 	authorized := router.Group("/api/v1", basicAuth())
