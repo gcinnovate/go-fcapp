@@ -12,6 +12,7 @@ import (
 )
 
 var regionDistricts map[string]map[string]interface{}
+var subcountyFacilities map[string]map[string]interface{}
 var db *sqlx.DB
 
 func init() {
@@ -27,6 +28,11 @@ func init() {
 		log.Fatal(err)
 	}
 	districtSubcounties, err = LoadDistrictSubcounties(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	subcountyFacilities, err = LoadSubcountyFacilities(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,7 +57,7 @@ func GetDB() *sqlx.DB {
 // LoadRegionDistricts simply loads our regions and their underlyng districts
 func LoadRegionDistricts(db *sqlx.DB) (map[string]map[string]interface{}, error) {
 	regDistricts := make(map[string]map[string]interface{})
-	rows, err := db.Queryx("SELECT name FROM fcapp_regions")
+	rows, err := db.Queryx("SELECT name FROM fcapp_orgunits WHERE hierarchylevel = 2")
 	if err != nil {
 		log.Fatal("Failed to load regions")
 	}
@@ -68,9 +74,9 @@ func LoadRegionDistricts(db *sqlx.DB) (map[string]map[string]interface{}, error)
 			`
 			SELECT 
 				name 
-			FROM fcapp_locations 
+			FROM fcapp_orgunits 
 			WHERE 
-				id IN (select unnest(districts) FROM fcapp_regions WHERE name = :region) 
+				parentid = (select id FROM fcapp_orgunits WHERE hierarchylevel = 2 AND name = :region) 
 			ORDER BY name
 			`, map[string]interface{}{"region": region})
 		if err != nil {
@@ -137,7 +143,7 @@ var districtSubcounties map[string]map[string]interface{}
 func LoadDistrictSubcounties(db *sqlx.DB) (map[string]map[string]interface{}, error) {
 	districtSubs := make(map[string]map[string]interface{})
 
-	rows, err := db.Queryx("SELECT id, name FROM fcapp_locations WHERE level = 2 ORDER BY name")
+	rows, err := db.Queryx("SELECT id, name FROM fcapp_orgunits WHERE hierarchylevel = 3 ORDER BY name")
 	if err != nil {
 		log.Fatal("Failed to load districts")
 	}
@@ -152,7 +158,7 @@ func LoadDistrictSubcounties(db *sqlx.DB) (map[string]map[string]interface{}, er
 		}
 		records, err := db.NamedQuery(
 			`
-			SELECT name FROM fcapp_locations WHERE tree_parent_id = :district_id	
+			SELECT name FROM fcapp_orgunits WHERE parentid = :district_id	
 			`, map[string]interface{}{"district_id": districtID})
 		if err != nil {
 			log.Fatal("Failed to load subcounties in district: ", district, " ", districtID, err)
@@ -219,11 +225,105 @@ func LoadDistrictSubcounties(db *sqlx.DB) (map[string]map[string]interface{}, er
 	return districtSubs, nil
 }
 
+func LoadSubcountyFacilities(db *sqlx.DB) (map[string]map[string]interface{}, error) {
+	subFacilities := make(map[string]map[string]interface{})
+
+	rows, err := db.Queryx(`
+		SELECT id, name FROM fcapp_orgunits WHERE hierarchylevel = 4 
+		    AND parentid NOT IN (SELECT id FROM fcapp_orgunits WHERE hierarchylevel= 4 
+		        AND name IN('Wakiso', 'Kampala')) ORDER BY name
+		`)
+	if err != nil {
+		log.Fatal("Failed to load subcounties")
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var subcounty string
+		var subcountyID int64
+		err = rows.Scan(&subcountyID, &subcounty)
+		if err != nil {
+			log.Fatal("Failed to load subcounty:", err)
+			return nil, err
+		}
+
+		records, err := db.NamedQuery(
+			`
+			SELECT name FROM fcapp_orgunits WHERE parentid = :subcounty_id	
+			`, map[string]interface{}{"subcounty_id": subcountyID})
+		if err != nil {
+			log.Fatal("Failed to load facilities in subcounty: ", subcounty, " ", subcountyID, err)
+			return nil, err
+		}
+		defer records.Close()
+
+		payload := make(map[string]interface{})
+		facilities := make(map[string]string)
+		screen1 := ""
+		screen2 := ""
+		screen3 := ""
+		var flist []string
+		idx := 0
+
+		for records.Next() {
+			idx++
+			var facility string
+			err = records.Scan(&facility)
+			if err != nil {
+				log.Fatal("Failed to read facilities from subcounty: ", subcounty)
+				return nil, err
+			}
+			if idx == 11 || idx == 21 {
+				flist = append(flist, "#")
+				flist = append(flist, facility)
+			} else {
+				flist = append(flist, facility)
+			}
+			switch {
+			case idx < 11:
+				screen1 += fmt.Sprintf("%d. %s\n", idx, facility)
+				facilities[fmt.Sprintf("%d", idx)] = facility
+			case idx > 10 && idx < 20:
+				screen2 += fmt.Sprintf("%d. %s\n", idx+1, facility)
+				facilities[fmt.Sprintf("%d", idx+1)] = facility
+			case idx > 20 && idx < 31:
+				screen3 += fmt.Sprintf("%d. %s\n", idx+2, facility)
+				facilities[fmt.Sprintf("%d", idx+2)] = facility
+
+			}
+		}
+		if len(screen2) > 0 {
+			screen1 += "11. More\n"
+			screen2 += "0. Back\n"
+		}
+		if len(screen3) > 0 {
+			screen2 += "21. More\n"
+			screen3 += "0. Back\n"
+		}
+		if len(screen2) < 1 {
+			screen1 += "0. Back\n"
+		}
+
+		payload["facility_list"] = strings.Join(flist, ",")
+		payload["s_screen_1"] = screen1
+		payload["s_screen_2"] = screen2
+		payload["s_screen_3"] = screen3
+
+		subFacilities[fmt.Sprintf("%s", subcounty)] = payload
+	}
+
+	return subFacilities, nil
+}
+
 // GetDistrictSubcounties ...
 func GetDistrictSubcounties() map[string]map[string]interface{} {
 	return districtSubcounties
 }
 
+// GetSubcountyFacilities ...
+func GetSubcountyFacilities() map[string]map[string]interface{} {
+	return subcountyFacilities
+}
 func insert(a []string, s string, i int) []string {
 	return append(a[:i], append([]string{s}, a[i:]...)...)
 }

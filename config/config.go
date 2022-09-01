@@ -27,6 +27,8 @@ type Config struct {
 		AuthToken                  string `yaml:"authtoken" env:"FCAPP_AUTH_TOKEN" env-description:"RapidPro API Token"`
 		RootURI                    string `yaml:"rooturi" env:"FCAPP_ROOT_URI" env-description:"API ROOT URI"`
 		SmsURL                     string `yaml:"smsurl" env:"FCAPP_SMSURL" env-description:"API SMS endpoint"`
+		SmsUser                    string `yaml:"sms_user" env:"FCAPP_SMS_USER" env-description:"User for SMS endpoint"`
+		SmsPassword                string `yaml:"sms_password" env:"FCAPP_SMS_PASSWORD" env-description:"Password for SMS endpoint"`
 		PrebirthCampaign           string `yaml:"prebirth_campaign" env:"FCAPP_PREBIRTH_CAMPAIGN" env-description:"Prebirth Campaign UUID"`
 		PostbirthCampaign          string `yaml:"postbirth_campaign" env:"FCAPP_POSTBIRTH_CAMPAIGN" env-description:"Postbirth Campaign UUID"`
 		FamilyConnectURI           string `yaml:"familyconnect_uri" env:"FCAPP_FAMILYCONNECT_URI" env-description:"FamilyConnect URI"`

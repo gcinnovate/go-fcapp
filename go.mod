@@ -10,4 +10,5 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.9.0
 	github.com/nyaruka/phonenumbers v1.0.69
+	golang.org/x/sys v0.0.0-20220808155132-1c4a2a72c664 // indirect
 )

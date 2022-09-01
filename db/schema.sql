@@ -1,6 +1,67 @@
 
 \connect temba_latest
 
+CREATE TABLE fcapp_orgunits (
+    id SERIAL NOT NULL PRIMARY KEY,
+    uid VARCHAR(11) NOT NULL,
+    name VARCHAR(230) NOT NULL,
+    code VARCHAR(50) NOT NULL DEFAULT '',
+    shortname VARCHAR(50) DEFAULT '',
+    parentid BIGINT,
+    path VARCHAR(255),
+    hierarchylevel INTEGER,
+    created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION get_ou_parent(_id INT) RETURNS INTEGER AS
+$$
+    DECLARE
+    parentuid TEXT;
+    parentid INT := 0;
+    BEGIN
+        SELECT split_part(path, '/', hierarchylevel) INTO parentuid
+            FROM fcapp_orgunits WHERE id = _id;
+        IF FOUND THEN
+            SELECT id INTO parentid FROM fcapp_orgunits WHERE uid = parentuid;
+            RETURN parentid;
+        END IF;
+
+        RETURN 0;
+    END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION count_ou_children(_id INT) RETURNS INT
+AS
+$$
+    DECLARE
+        ret INT := 0;
+    BEGIN
+        SELECT count(*) INTO ret FROM fcapp_orgunits WHERE parentid = _id;
+        RETURN ret;
+    END
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION add_node(_parent INT, _name TEXT) RETURNS BOOLEAN AS
+$$
+    DECLARE
+    parent_path TEXT;
+    _level INT;
+    _uid TEXT;
+    BEGIN
+        SELECT path, hierarchylevel + 1, gen_code() INTO parent_path, _level, _uid WHERE id = _parent;
+        IF FOUND THEN
+            INSERT INTO fcapp_orgunist(uid, name, parentid, path, hierarchylevel)
+            VALUES(_uid, _name, parent_path || '/' || _uid, _level);
+        END IF;
+    END
+$$ LANGUAGE 'plpgsql';
+-- UPDATE fcapp_orgunits set parentid = get_ou_parent(id) WHERE id > 1;
+-- UPDATE fcapp_orgunits set name = replace(name, ' District', '') where hierarchylevel = 3
+-- UPDATE fcapp_orgunits set name = replace(name, ' Subcounty', '') where hierarchylevel=4;
+
 CREATE TABLE fcapp_user_roles (
     id SERIAL NOT NULL PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
@@ -95,8 +156,8 @@ import random
 from uuid import uuid4
 
 
-def id_generator(size=12, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
+def id_generator(size=10, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
+    return random.choice(string.ascii_uppercase) + ''.join(random.choice(chars) for _ in range(size))
 
 return id_generator()
 $function$;

@@ -59,11 +59,18 @@ func main() {
 			district := c.Param("district")
 			c.JSON(http.StatusOK, db.GetDistrictSubcounties()[district])
 		})
+		v1.POST("/subcounty_facilities/:subcounty", func(c *gin.Context) {
+			subcounty := c.Param("subcounty")
+			c.JSON(http.StatusOK, db.GetSubcountyFacilities()[subcounty])
+		})
 		em := new(controllers.EmtctUpdateContactController)
 		v1.POST("/update_emtct_contact", em.EmtctUpdateContact)
 
 		cn := new(controllers.RegisteredContactController)
 		v1.POST("/contact_registered", cn.ContactRegistered)
+
+		brocastController := new(controllers.BroadcastController)
+		v1.POST("/broadcast", brocastController.Broadcast)
 	}
 	// v2 := router.Use()
 	authorized := router.Group("/api/v1", basicAuth())
