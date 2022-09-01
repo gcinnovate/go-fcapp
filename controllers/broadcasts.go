@@ -40,11 +40,10 @@ func (t *BroadcastController) Broadcast(c *gin.Context) {
 	var (
 		sendURLs = []string{
 			"http://smgw1.yo.co.ug:9100/sendsms",
-			"http://41.220.12.201:9100/sendsms",
-			"http://164.40.148.210:9100/sendsms",
 		}
 	)
 	form := url.Values{
+		"origin":       []string{helpers.GetDefaultEnv("FCAPP_SMS_CODE", "8900")},
 		"sms_content":  []string{feedbackMessage},
 		"destinations": contactURN,
 		"ybsacctno":    []string{helpers.GetDefaultEnv("FCAPP_SMS_USER", "")},
