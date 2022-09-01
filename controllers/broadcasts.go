@@ -28,7 +28,7 @@ func (t *BroadcastController) Broadcast(c *gin.Context) {
 	}
 
 	contact := payload.Contact.UUID
-	contactURN := []string{payload.Contact.Urn}
+	contactURN := []string{strings.TrimPrefix(payload.Contact.Urn, "tel:+")}
 
 	feedbackMessage := helpers.GetFlowResult(payload.Results, "feedback_message")
 	if len(feedbackMessage) == 0 {
